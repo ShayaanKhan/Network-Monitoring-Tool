@@ -19,6 +19,7 @@ def get_protocol_name(proto_num):
 
 def packet_handler(packet):
 
+# IGNORES SELF IP #
     if IP in packet and packet[IP].src == local_ip:
         return
     
