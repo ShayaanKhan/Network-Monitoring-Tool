@@ -2,6 +2,10 @@ from scapy.all import sniff, IP, TCP, UDP, Ether
 import csv
 import os
 from datetime import datetime
+import socket
+
+
+local_ip = socket.gethostbyname(socket.gethostname())
 
 def get_protocol_name(proto_num):
     # Define a dictionary to map protocol numbers to protocol names
@@ -14,6 +18,10 @@ def get_protocol_name(proto_num):
     return protocol_names.get(proto_num, "Unknown")
 
 def packet_handler(packet):
+
+    if IP in packet and packet[IP].src == local_ip:
+        return
+    
     protocol_name = "Unknown"
     if IP in packet:
         protocol_num = packet[IP].proto
