@@ -1,33 +1,26 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
+from pyvis.network import Network
+import os
 
 # Read the CSV file into a pandas DataFrame
 csv_file_path = "logs/captured_packets.csv"  # Adjust the path to your CSV file
 df = pd.read_csv(csv_file_path)
 
-# Extract source and destination IP addresses from the DataFrame
+# Create an interactive network using pyvis
+net = Network(notebook=True)
+net.barnes_hut(gravity=-5000, central_gravity=0.3, spring_length=250)
+
+# Add nodes and edges from the DataFrame
 source_ips = df["Source IP"]
 destination_ips = df["Destination IP"]
+edges = zip(source_ips, destination_ips)
+for src, dest in edges:
+    net.add_node(src, label=src, font_size=500)  # Increase fontsize for source nodes
+    net.add_node(dest, label=dest, font_size=500)  # Increase fontsize for destination nodes
+    net.add_edge(src, dest)
 
-# Create a cross-tabulation (crosstab) of IP address occurrences
-cross_tab = pd.crosstab(source_ips, destination_ips)
+# Define the path to save the HTML file within the "logs" folder
+html_file_path = os.path.join("logs", "interactive_graph_with_labels.html")
 
-# Convert the cross-tabulation to a numpy array for heatmap
-heatmap_data = cross_tab.to_numpy()
-
-# Create the heatmap
-plt.figure(figsize=(10, 8))
-plt.imshow(heatmap_data, cmap='viridis', interpolation='nearest')
-plt.colorbar(label='Packet Count')
-plt.title('Network Traffic Heatmap')
-plt.xlabel('Destination IP Addresses')
-plt.ylabel('Source IP Addresses')
-
-# Set tick labels to match the IP addresses
-plt.xticks(np.arange(len(destination_ips.unique())), destination_ips.unique(), rotation='vertical')
-plt.yticks(np.arange(len(source_ips.unique())), source_ips.unique())
-
-# Display the heatmap
-plt.tight_layout()
-plt.show()
+# Save and show the interactive graph
+net.save_graph(html_file_path)
