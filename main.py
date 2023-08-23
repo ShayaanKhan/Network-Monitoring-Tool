@@ -55,7 +55,7 @@ class NetworkMonitor:
     def save_packet_data(self):
         now = datetime.now()
         formatted_date = now.strftime("%Y-%m-%d_%H-%M-%S")
-        csv_filename = f"packet_log_{formatted_date}.csv"
+        csv_filename = f"logs/packet_log_{formatted_date}.csv"
 
         with open(csv_filename, "w", newline="") as file:
             csv_writer = csv.writer(file)
