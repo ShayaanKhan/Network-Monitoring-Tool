@@ -18,14 +18,18 @@ heatmap_data = cross_tab.to_numpy()
 
 # Create the heatmap
 plt.figure(figsize=(10, 8))
-plt.imshow(heatmap_data, cmap='viridis', interpolation='nearest')
-plt.colorbar(label='Packet Count')
-plt.title('Network Traffic Heatmap')
-plt.xlabel('Destination IP Addresses')
-plt.ylabel('Source IP Addresses')
+plt.imshow(heatmap_data, cmap="viridis", interpolation="nearest")
+plt.colorbar(label="Packet Count")
+plt.title("Network Traffic Heatmap")
+plt.xlabel("Destination IP Addresses")
+plt.ylabel("Source IP Addresses")
 
 # Set tick labels to match the IP addresses
-plt.xticks(np.arange(len(destination_ips.unique())), destination_ips.unique(), rotation='vertical')
+plt.xticks(
+    np.arange(len(destination_ips.unique())),
+    destination_ips.unique(),
+    rotation="vertical",
+)
 plt.yticks(np.arange(len(source_ips.unique())), source_ips.unique())
 
 # Display the heatmap

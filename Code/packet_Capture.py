@@ -3,9 +3,13 @@ import csv
 import os
 from datetime import datetime
 import socket
+import time
+import threading
 
 
 local_ip = socket.gethostbyname(socket.gethostname())
+start_time = None
+
 
 def get_protocol_name(proto_num):
     # Define a dictionary to map protocol numbers to protocol names
@@ -17,12 +21,12 @@ def get_protocol_name(proto_num):
     }
     return protocol_names.get(proto_num, "Unknown")
 
-def packet_handler(packet):
 
-# IGNORES SELF IP #
+def packet_handler(packet):
+    # IGNORES SELF IP #
     if IP in packet and packet[IP].src == local_ip:
         return
-    
+
     protocol_name = "Unknown"
     if IP in packet:
         protocol_num = packet[IP].proto
@@ -61,9 +65,15 @@ def packet_handler(packet):
         csv_file_path = os.path.join("logs", "captured_packets.csv")
         with open(csv_file_path, mode="a", newline="") as csv_file:
             fieldnames = [
-                "Time", "Source MAC", "Destination MAC",
-                "Source IP", "Destination IP", "Protocol",
-                "Source Port", "Destination Port", "Flags"
+                "Time",
+                "Source MAC",
+                "Destination MAC",
+                "Source IP",
+                "Destination IP",
+                "Protocol",
+                "Source Port",
+                "Destination Port",
+                "Flags",
             ]
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
@@ -79,9 +89,10 @@ def packet_handler(packet):
                 "Protocol": protocol_name,
                 "Source Port": source_port,
                 "Destination Port": destination_port,
-                "Flags": flags
+                "Flags": flags,
             }
             writer.writerow(packet_info)
+
 
 # Create a directory if it doesn't exist
 logs_folder = "logs"
@@ -89,13 +100,35 @@ if not os.path.exists(logs_folder):
     os.makedirs(logs_folder)
 
 
+def time_updater():
+    global start_time
+    while True:
+        if start_time:
+            elapsed_time = time.time() - start_time
+            hours, remainder = divmod(elapsed_time, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            print(
+                f"Capturing duration: {int(hours):02}:{int(minutes):02}:{int(seconds):02}",
+                end="\r",
+            )
+        time.sleep(1)
+
+
+time_thread = threading.Thread(target=time_updater)
+time_thread.daemon = True
+time_thread.start()
+
 # MAIN IS THIS #
 
 # Start packet capturing
+start_time = time.time()
 print("Real-time packet capturing started. Press Ctrl+C to stop...")
 try:
     sniff(filter="", prn=packet_handler)
 except KeyboardInterrupt:
     pass
 
+# Ensure the time thread stops when capturing is done
+start_time = None
+time_thread.join()
 print("Packet capturing stopped.")

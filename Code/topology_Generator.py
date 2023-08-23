@@ -16,7 +16,9 @@ destination_ips = df["Destination IP"]
 edges = zip(source_ips, destination_ips)
 for src, dest in edges:
     net.add_node(src, label=src, font_size=500)  # Increase fontsize for source nodes
-    net.add_node(dest, label=dest, font_size=500)  # Increase fontsize for destination nodes
+    net.add_node(
+        dest, label=dest, font_size=500
+    )  # Increase fontsize for destination nodes
     net.add_edge(src, dest)
 
 # Define the path to save the HTML file within the "logs" folder

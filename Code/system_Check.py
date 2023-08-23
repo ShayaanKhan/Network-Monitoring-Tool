@@ -3,8 +3,9 @@ import csv
 import os
 from datetime import datetime
 
+
 def online_check():
-    subnet="192.168.0.1/24"
+    subnet = "192.168.0.1/24"
     # Create an ARP request packet
     arp_request = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=subnet)
 
@@ -49,6 +50,7 @@ def online_check():
             writer.writerow({"Status": "Offline", "IP Address": ip, "MAC Address": mac})
 
     # return f"Results saved to {filename}"
+
 
 # Example usage
 # result_message = online_check()
