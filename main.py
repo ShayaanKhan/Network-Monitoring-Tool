@@ -1,71 +1,53 @@
-import sys
 import threading
-import time
-import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QTableWidget, QTableWidgetItem
+import csv
+import socket
 from scapy.all import sniff, IP
 from datetime import datetime
 
-class NetworkMonitor(QMainWindow):
+class NetworkMonitor:
     def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Network Monitor")
-        self.setGeometry(100, 100, 1000, 600)
-
-        self.text_edit = QTextEdit(self)
-        self.text_edit.setGeometry(10, 10, 780, 580)
-
-        self.start_button = QPushButton("Start Capture", self)
-        self.start_button.setGeometry(800, 10, 180, 40)
-        self.start_button.clicked.connect(self.start_capture)
-
-        self.stop_button = QPushButton("Stop Capture", self)
-        self.stop_button.setGeometry(800, 60, 180, 40)
-        self.stop_button.clicked.connect(self.stop_capture)
-        self.stop_button.setEnabled(False)
-
-        self.packet_table = QTableWidget(self)
-        self.packet_table.setGeometry(10, 60, 780, 580)
-        self.packet_table.setColumnCount(2)
-        self.packet_table.setHorizontalHeaderLabels(["Source IP", "Destination IP"])
-
-        self.capture_thread = None
         self.capturing = False
         self.packet_data = []
+        self.interface = 'Wi-Fi'  # Replace with your WiFi adapter's interface
+        self.capture_thread = None
 
     def packet_handler(self, packet):
         if packet.haslayer(IP):
             src_ip = packet[IP].src
             dst_ip = packet[IP].dst
-            self.packet_data.append((src_ip, dst_ip))
-            self.update_table(src_ip, dst_ip)
+            src_name = self.resolve_dns(src_ip)
+            dst_name = self.resolve_dns(dst_ip)
+            self.packet_data.append((src_ip, src_name, dst_ip, dst_name))
+            self.display_packet(src_ip, src_name, dst_ip, dst_name)
 
-    def update_table(self, src_ip, dst_ip):
-        row_position = self.packet_table.rowCount()
-        self.packet_table.insertRow(row_position)
-        self.packet_table.setItem(row_position, 0, QTableWidgetItem(src_ip))
-        self.packet_table.setItem(row_position, 1, QTableWidgetItem(dst_ip))
+    def display_packet(self, src_ip, src_name, dst_ip, dst_name):
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{timestamp}] Source: {src_ip} ({src_name}) -> Destination: {dst_ip} ({dst_name})")
+
+    def resolve_dns(self, ip):
+        try:
+            hostname = socket.gethostbyaddr(ip)[0]
+            return hostname
+        except (socket.herror, socket.gaierror):
+            return "Unknown"
 
     def start_capture(self):
-        self.capturing = True
-        self.start_button.setEnabled(False)
-        self.stop_button.setEnabled(True)
-        self.packet_data = []
-        self.packet_table.setRowCount(0)
-        self.capture_thread = threading.Thread(target=self.sniff_packets)
-        self.capture_thread.start()
+        if not self.capturing:
+            self.capturing = True
+            self.packet_data = []
+            self.capture_thread = threading.Thread(target=self.sniff_packets)
+            self.capture_thread.start()
+            print("Network monitoring started.")
 
     def stop_capture(self):
-        self.capturing = False
-        self.start_button.setEnabled(True)
-        self.stop_button.setEnabled(False)
-        self.capture_thread.join()
-        self.save_packet_data()
+        if self.capturing:
+            self.capturing = False
+            self.capture_thread.join()
+            self.save_packet_data()
+            print("Network monitoring stopped.")
 
     def sniff_packets(self):
-        # Replace 'wlan0' with the appropriate interface name for your WiFi adapter
-        interface = 'Wi-Fi'
-        sniff(iface=interface, prn=self.packet_handler, stop_filter=self.should_stop_capture)
+        sniff(iface=self.interface, prn=self.packet_handler, stop_filter=self.should_stop_capture)
 
     def should_stop_capture(self, _):
         return not self.capturing
@@ -73,14 +55,27 @@ class NetworkMonitor(QMainWindow):
     def save_packet_data(self):
         now = datetime.now()
         formatted_date = now.strftime("%Y-%m-%d_%H-%M-%S")
-        log_filename = f"logs/packet_log_{formatted_date}.txt"
+        csv_filename = f"packet_log_{formatted_date}.csv"
 
-        with open(log_filename, "w") as file:
-            for src_ip, dst_ip in self.packet_data:
-                file.write(f"Source IP: {src_ip} --> Destination IP: {dst_ip}\n")
+        with open(csv_filename, "w", newline="") as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(["Source IP", "Source Name", "Destination IP", "Destination Name"])
+            for src_ip, src_name, dst_ip, dst_name in self.packet_data:
+                csv_writer.writerow([src_ip, src_name, dst_ip, dst_name])
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = NetworkMonitor()
-    window.show()
-    sys.exit(app.exec_())
+    network_monitor = NetworkMonitor()
+
+    try:
+        while True:
+            user_input = input("Enter 'start' to start monitoring, 'stop' to stop, or 'exit' to quit: ").strip().lower()
+            if user_input == 'start':
+                network_monitor.start_capture()
+            elif user_input == 'stop':
+                network_monitor.stop_capture()
+            elif user_input == 'exit':
+                break
+    except KeyboardInterrupt:
+        print("\nStopping network monitoring...")
+        network_monitor.stop_capture()
+        print("Network monitoring stopped.")
