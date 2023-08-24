@@ -18,7 +18,5 @@ def generate_topology_from_csv(csv_file_path, output_html):
     # Display the network topology visualization
     network.show(output_html)
 
-if __name__ == "__main__":
-    csv_file_path = "logs/captured_packets.csv"
-    output_html = "logs/network_topology.html"
-    generate_topology_from_csv(csv_file_path, output_html)
+
+

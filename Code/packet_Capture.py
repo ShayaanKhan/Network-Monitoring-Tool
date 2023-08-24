@@ -3,9 +3,7 @@ import csv
 import os
 import socket
 import time
-import threading
 
-local_ip = socket.gethostbyname(socket.gethostname())
 
 def get_protocol_name(proto_num):
     protocol_names = {
@@ -15,7 +13,9 @@ def get_protocol_name(proto_num):
     }
     return protocol_names.get(proto_num, "Unknown")
 
+
 def packet_handler(packet):
+    local_ip = socket.gethostbyname(socket.gethostname())
     if IP in packet and (packet[IP].src == local_ip or packet[IP].dst == local_ip):
         return
 
@@ -90,14 +90,3 @@ def packet_handler(packet):
                 "Headers": headers.summary(),
             }
             writer.writerow(packet_info)
-
-logs_folder = "logs"
-if not os.path.exists(logs_folder):
-    os.makedirs(logs_folder)
-
-try:
-    sniff(filter="", prn=packet_handler)
-except KeyboardInterrupt:
-    pass
-
-print("Packet capturing stopped.")

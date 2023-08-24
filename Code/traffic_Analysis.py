@@ -137,15 +137,3 @@ def bytes_to_human_readable(bytes):
             return "%3.1f %s" % (bytes, unit)
         bytes /= 1024.0
     return "%.1f %s" % (bytes, "TB")
-
-
-if __name__ == "__main__":
-    file_path = "logs/captured_packets.csv"
-    data = load_packet_data(file_path)
-    
-    time_interval = 1  # Interval in seconds
-    subnet = "192.168.0."
-    traffic_volume, sender_bytes, receiver_bytes = analyze_traffic(data, time_interval, subnet)
-    
-    visualize_traffic_trend(traffic_volume, data)
-    visualize_top_senders_receivers(sender_bytes, receiver_bytes)
