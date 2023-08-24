@@ -42,5 +42,4 @@ If possible, use packet payload analysis to identify the applications or service
 Bandwidth Usage:
 Estimate bandwidth usage by aggregating packet sizes. Identify which applications or users consume the most bandwidth.
 
-Visualization:
-
+Visualization.
