@@ -15,3 +15,32 @@ Things to be done:
 4. Implement IDS.
 5. Update the program to work in real-time.
 6. Add a GUI  
+
+
+Details and modifications pending:
+----------------------------------
+traffic_Analysis.py
+
+Traffic Volume Analysis:
+Calculate traffic volume over time intervals (e.g., hours, days). Visualize the traffic trend to identify peak usage periods.
+
+Protocol Distribution:
+Analyze the distribution of protocols used in the network traffic. Identify which protocols dominate the traffic and spot anomalies.
+
+Traffic Patterns by Source/Destination:
+Identify the most active source and destination IP addresses. Look for communication patterns between specific hosts.
+
+Latency Analysis:
+Calculate the time between packets to identify latency and potential bottlenecks. Analyze round-trip times for ICMP packets.
+
+Traffic Distribution by Port:
+Analyze the distribution of traffic by source and destination ports. This can help identify which services are heavily used.
+
+Application Identification (Optional):
+If possible, use packet payload analysis to identify the applications or services generating the traffic.
+
+Bandwidth Usage:
+Estimate bandwidth usage by aggregating packet sizes. Identify which applications or users consume the most bandwidth.
+
+Visualization:
+

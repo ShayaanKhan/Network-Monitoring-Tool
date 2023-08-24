@@ -1,28 +1,24 @@
-import pandas as pd
 from pyvis.network import Network
-import os
+import csv
 
-# Read the CSV file into a pandas DataFrame
-csv_file_path = "logs/captured_packets.csv"  # Adjust the path to your CSV file
-df = pd.read_csv(csv_file_path)
+def generate_topology_from_csv(csv_file_path, output_html):
+    # Create a Network object
+    network = Network(notebook=True)
 
-# Create an interactive network using pyvis
-net = Network(notebook=True)
-net.barnes_hut(gravity=-5000, central_gravity=0.3, spring_length=250)
+    # Read data from the CSV file and create nodes and edges
+    with open(csv_file_path, mode="r") as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            src_ip = row["Source IP"]
+            dst_ip = row["Destination IP"]
+            network.add_node(src_ip)
+            network.add_node(dst_ip)
+            network.add_edge(src_ip, dst_ip)
 
-# Add nodes and edges from the DataFrame
-source_ips = df["Source IP"]
-destination_ips = df["Destination IP"]
-edges = zip(source_ips, destination_ips)
-for src, dest in edges:
-    net.add_node(src, label=src, font_size=500)  # Increase fontsize for source nodes
-    net.add_node(
-        dest, label=dest, font_size=500
-    )  # Increase fontsize for destination nodes
-    net.add_edge(src, dest)
+    # Display the network topology visualization
+    network.show(output_html)
 
-# Define the path to save the HTML file within the "logs" folder
-html_file_path = os.path.join("logs", "interactive_graph_with_labels.html")
-
-# Save and show the interactive graph
-net.save_graph(html_file_path)
+if __name__ == "__main__":
+    csv_file_path = "logs/captured_packets.csv"
+    output_html = "logs/network_topology.html"
+    generate_topology_from_csv(csv_file_path, output_html)
