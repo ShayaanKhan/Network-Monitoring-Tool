@@ -1,4 +1,5 @@
 from Code.packet_Capture import *
+
 # from Code.heatmap_Generator import *
 # from Code.network_Attack import *
 from Code.system_Check import *
@@ -63,7 +64,9 @@ generate_topology_from_csv(csv_file_path, output_html)
 
 # ----------Traffic Analysis---------- #
 
-traffic_volume, sender_bytes, receiver_bytes = analyze_traffic(data, time_interval, subnet)
+traffic_volume, sender_bytes, receiver_bytes = analyze_traffic(
+    data, time_interval, subnet
+)
 visualize_traffic_trend(traffic_volume, data)
 visualize_top_senders_receivers(sender_bytes, receiver_bytes)
 
