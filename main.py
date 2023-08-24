@@ -36,15 +36,6 @@ def main():
     print("\n CSV stored in the logs folder \n\n\n")
 
     # ----------Packet Capture---------- #
-
-    print("Begining packet capturing")
-    try:
-        print("\nPacket capturing has started\n")
-        sniff(filter="", prn=packet_handler)
-    except KeyboardInterrupt:
-        pass
-    print("\nPacket capturing stopped.\n")
-
     while True:
         print("Please specify what action wouuld you like to perform. \n")
         print("\t 1. Start a packet capturing session \n")
@@ -54,7 +45,7 @@ def main():
         print("\t 5. Exit")
         option = input("Enter your option by typing the option number:")
 
-        if option == 1:
+        if option == '1':
             print("Begining packet capturing")
             try:
                 print("\nPacket capturing has started\n")
@@ -63,18 +54,19 @@ def main():
                 pass
             print("\nPacket capturing stopped.\n")
 
-        elif option == 2:
+        elif option == '2':
+            # ----------File selector---------- #
             csv_file_path = select_file()
             if csv_file_path:
                 print("Returned filepath:", csv_file_path)
             else:
                 print("No file selected.")
 
-        elif option == 3:
+        elif option == '3':
             # ----------Topology generator---------- #
             generate_topology_from_csv(csv_file_path, output_html)
 
-        elif option == 4:
+        elif option == '4':
             # ----------Traffic Analysis---------- #
             data = load_packet_data(csv_file_path)
             traffic_volume, sender_bytes, receiver_bytes = analyze_traffic(
@@ -83,8 +75,12 @@ def main():
             visualize_traffic_trend(traffic_volume, data)
             visualize_top_senders_receivers(sender_bytes, receiver_bytes)
 
-        elif option == 5:
+        elif option == '5':
             exit()
 
         else:
             print("Please enter the correct option")
+
+
+if __name__ == "__main__":
+    main()

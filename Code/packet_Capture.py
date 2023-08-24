@@ -56,7 +56,7 @@ def packet_handler(packet):
 
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
-        csv_file_path = os.path.join("logs", f"captured_packets_{timestamp}.csv")
+        csv_file_path = os.path.join("logs", f"captured_packets.csv")
         with open(csv_file_path, mode="a", newline="") as csv_file:
             fieldnames = [
                 "Time",
