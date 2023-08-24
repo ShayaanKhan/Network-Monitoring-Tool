@@ -29,11 +29,11 @@ def main():
     print("\nNetwork Analyser Tool v0.1\n")
 
     # ----------System Check---------- #
-    print("\n\nChecking and storing information of all systems online\n\n")
+    # print("\n\nChecking and storing information of all systems online\n\n")
 
-    online_check()
+    # online_check()
 
-    print("\n CSV stored in the logs folder \n\n\n")
+    # print("\n CSV stored in the logs folder \n\n\n")
 
     # ----------Packet Capture---------- #
     while True:
@@ -46,9 +46,12 @@ def main():
         option = input("Enter your option by typing the option number:")
 
         if option == '1':
+            # DT = datetime.timestamp()
+            # comm_DT(DT)
             print("Begining packet capturing")
             try:
                 print("\nPacket capturing has started\n")
+                # pack_Cap()
                 sniff(filter="", prn=packet_handler)
             except KeyboardInterrupt:
                 pass
