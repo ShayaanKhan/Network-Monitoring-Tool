@@ -1,6 +1,6 @@
 import os
 
-def select_file(current_path="."):
+def select_file(current_path="./logs"):
     print("Available files and folders:")
     files = [f for f in os.listdir(current_path) if os.path.isfile(os.path.join(current_path, f)) and f.endswith(".csv")]
     folders = [f for f in os.listdir(current_path) if os.path.isdir(os.path.join(current_path, f))]

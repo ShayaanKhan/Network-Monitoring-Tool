@@ -46,8 +46,7 @@ def main():
         option = input("Enter your option by typing the option number:")
 
         if option == '1':
-            # DT = datetime.timestamp()
-            # comm_DT(DT)
+            count = 1
             print("Begining packet capturing")
             try:
                 print("\nPacket capturing has started\n")
@@ -55,23 +54,45 @@ def main():
                 sniff(filter="", prn=packet_handler)
             except KeyboardInterrupt:
                 pass
+            while True:
+                filename = "logs/captured_packets.csv"
+                nf = f"logs/captured_packets_{count}.csv"
+                if not os.path.exists(nf):
+                    os.rename(filename, nf)
+                    break
+                else:
+                    count = count + 1
             print("\nPacket capturing stopped.\n")
 
         elif option == '2':
             # ----------File selector---------- #
-            csv_file_path = select_file()
-            if csv_file_path:
-                print("Returned filepath:", csv_file_path)
+            filename = select_file()
+            if filename:
+                print("Returned filepath:", filename)
             else:
                 print("No file selected.")
 
         elif option == '3':
+            # ----------File selector---------- #
+            filename = select_file()
+            if filename:
+                print("Returned filepath:", filename)
+            else:
+                print("No file selected.")
+
             # ----------Topology generator---------- #
-            generate_topology_from_csv(csv_file_path, output_html)
+            generate_topology_from_csv(filename, output_html)
 
         elif option == '4':
+            # ----------File selector---------- #
+            filename = select_file()
+            if filename:
+                print("Returned filepath:", filename)
+            else:
+                print("No file selected.")
+
             # ----------Traffic Analysis---------- #
-            data = load_packet_data(csv_file_path)
+            data = load_packet_data(filename)
             traffic_volume, sender_bytes, receiver_bytes = analyze_traffic(
                 data, time_interval, subnet
             )

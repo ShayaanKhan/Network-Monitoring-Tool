@@ -1,7 +1,7 @@
 from scapy.all import sniff, IP, TCP, UDP, Ether
 import csv
 import os
-import socket
+# import socket
 import time
 
 
@@ -15,9 +15,9 @@ def get_protocol_name(proto_num):
 
 
 def packet_handler(packet):
-    local_ip = socket.gethostbyname(socket.gethostname())
-    if IP in packet and (packet[IP].src == local_ip or packet[IP].dst == local_ip):
-        return
+    # local_ip = socket.gethostbyname(socket.gethostname())
+    # if IP in packet and (packet[IP].src == local_ip or packet[IP].dst == local_ip):
+    #     return
 
     protocol_name = "Unknown"
     if IP in packet:
